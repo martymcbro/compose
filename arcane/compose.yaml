@@ -15,6 +15,3 @@ services:
       - ENCRYPTION_KEY=${ENCRYPTION_KEY}
       - JWT_SECRET=${JWT_SECRET}
     restart: unless-stopped
-
-volumes:
-  arcane-data:
