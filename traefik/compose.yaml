@@ -1,0 +1,74 @@
+services:
+  traefik:
+    image: traefik
+    container_name: traefik
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      - TZ=Europe/Berlin
+      - CF_API_EMAIL=${CF_API_EMAIL}
+      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
+      - TRAEFIK_DASHBOARD_CREDENTIALS=${TRAEFIK_DASHBOARD_CREDENTIALS}
+    networks:
+      dmz:
+        ipv4_address: 192.168.178.254
+    depends_on:
+      - bouncer-traefik
+    #ports:
+    #  - 80:80 # HTTP entryPoints
+    #  - 443:443 # HTTPS entryPoints
+    #  - 8080:8080 # Dashbaord WebGui 
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /pool/docker/traefik/traefik.yml:/traefik.yml:ro
+      - /pool/docker/traefik/config:/config:ro
+      - /pool/docker/traefik/certs:/certs
+      - /pool/docker/traefik/logs:/var/log/traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.traefik-auth.basicauth.users=${TRAEFIK_DASHBOARD_CREDENTIALS}"
+      - "traefik.http.routers.traefik-secure.entrypoints=websecure"
+      - "traefik.http.routers.traefik-secure.rule=Host(`${HOST}`)"
+      - "traefik.http.routers.traefik-secure.middlewares=traefik-auth,default-whitelist@file"
+      - "traefik.http.routers.traefik-secure.tls=true"
+      - "traefik.http.routers.traefik-secure.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.traefik-secure.tls.domains[0].main=${DOMAIN_MAIN}"
+      - "traefik.http.routers.traefik-secure.tls.domains[0].sans=${DOMAIN_SANS}"
+      - "traefik.http.services.traefik.loadbalancer.server.port=2283"
+      - "traefik.http.routers.traefik-secure.service=api@internal"
+
+  crowdsec:
+    image: crowdsecurity/crowdsec:latest
+    container_name: crowdsec
+    environment:
+      GID: "${GID-100}"
+      COLLECTIONS: "crowdsecurity/linux crowdsecurity/traefik"
+    volumes:
+      - /pool/docker/crowdsec/acquis.yaml:/etc/crowdsec/acquis.yaml
+      - /pool/docker/crowdsec/db:/var/lib/crowdsec/data/
+      - /pool/docker/crowdsec/config:/etc/crowdsec/
+      - /pool/docker/traefik/logs:/var/log/traefik/:ro
+    networks:
+      dmz:
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+
+  bouncer-traefik:
+    image: docker.io/fbonalair/traefik-crowdsec-bouncer:latest
+    container_name: bouncer-traefik
+    environment:
+      CROWDSEC_BOUNCER_API_KEY: ${CROWDSEC_BOUNCER_API_KEY}
+      CROWDSEC_AGENT_HOST: crowdsec:8080
+    networks:
+      dmz:
+    depends_on:
+      - crowdsec
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  dmz:
+    external: true

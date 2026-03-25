@@ -1,0 +1,12 @@
+services:
+  filebrowser:
+    container_name: filebrowser
+    image: filebrowser/filebrowser
+    volumes:
+      - /pool:/srv
+      - /pool/docker/filebrowser/database:/database
+      - /pool/docker/filebrowser/config:/config
+    user: 1000:100
+    ports:
+      - 8042:80
+    restart: always

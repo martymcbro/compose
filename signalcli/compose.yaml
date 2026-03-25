@@ -1,0 +1,17 @@
+services:  
+  signal-cli-rest-api:
+    container_name: signalcli
+    hostname: signalcli
+    image: bbernhard/signal-cli-rest-api:latest  
+    environment:
+      - MODE=json-rpc #supported modes: json-rpc, native, normal. json-prc is recommended for speed
+    networks:
+      lan:
+        ipv4_address: 192.168.1.57
+    volumes:
+      - "/pool/docker/signalcli/config:/home/.local/share/signal-cli" # map "signal-cli-config" folder on host system into docker container. the folder contains the password and cryptographic keys when a new number is registered
+    restart: always
+
+networks:
+    lan:
+      external: true

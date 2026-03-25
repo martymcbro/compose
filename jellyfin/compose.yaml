@@ -1,0 +1,21 @@
+services:
+  jellyfin:
+    image: jellyfin/jellyfin
+    container_name: jellyfin
+    #hostname: jellyfin
+    #domainname: example.com
+    group_add:
+      - "105"
+    user: 1000:100
+    privileged: true
+    network_mode: "host"
+    volumes:
+      - /dev/dri:/dev/dri
+      - /pool/docker/jellyfin/config:/config
+      - /pool/docker/jellyfin/cache:/cache
+      - /srv/remotemount/movies:/media
+      - /srv/remotemount/series:/media2
+    restart: always
+    # Optional - alternative address used for autodiscovery
+    #environment:
+    #  - JELLYFIN_PublishedServerUrl=http://example.com

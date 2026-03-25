@@ -1,0 +1,20 @@
+services: 
+   omada:
+    container_name: omada
+    image: mbentley/omada-controller:latest
+    networks:
+      lan:
+        ipv4_address: 192.168.1.50
+    cap_add:
+      - NET_ADMIN
+    environment:
+      TZ: Europe/Berlin
+    volumes:
+      - /pool/docker/omada/data:/opt/tplink/EAPController/data:rw
+      - /pool/docker/omada/work:/opt/tplink/EAPController/work:rw
+      - /pool/docker/omada/logs:/opt/tplink/EAPController/logs:rw
+    restart: always
+    
+networks:
+    lan:
+      external: true

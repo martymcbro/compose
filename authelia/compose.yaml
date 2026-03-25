@@ -1,0 +1,28 @@
+services:
+  authelia:
+    image: 'authelia/authelia'
+    container_name: 'authelia'
+    volumes:
+      - '/pool/docker/authelia/config:/config'
+    networks:
+      dmz:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.authelia.rule=Host(`${HOST}`)"
+      - "traefik.http.routers.authelia.entrypoints=websecure"
+      - "traefik.http.routers.authelia.tls=true"
+      - "traefik.http.routers.authelia.tls.certresolver=letsencrypt"
+      - "traefik.http.services.authelia.loadbalancer.server.port=9091"
+      - "traefik.http.middlewares.authelia.forwardauth.address=http://authelia:9091/api/authz/forward-auth"  # yamllint disable-line rule:line-length
+      - "traefik.http.middlewares.authelia.forwardauth.trustForwardHeader=true"
+      - "traefik.http.middlewares.authelia.forwardauth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Name,Remote-Email"  # yamllint disable-line rule:line-length
+    restart: 'unless-stopped'
+    healthcheck:
+      ## In production the healthcheck section should be commented.
+      disable: true
+    environment:
+      TZ: 'Europe/Berlin'
+
+networks:
+  dmz:
+    external: true

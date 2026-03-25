@@ -1,0 +1,58 @@
+services:
+  joplindb:
+    container_name: joplin-db
+    image: postgres:13
+    networks:
+      joplin:
+    volumes:
+      - /pool/docker/joplin/postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_DB=${DB_DATABASE}
+    restart: always
+
+  app:
+    container_name: joplin-server
+    image: joplin/server:latest
+    networks:
+      joplin:
+      dmz:
+    depends_on:
+      - joplindb
+    environment:
+      - APP_PORT=9001
+      - APP_BASE_URL=${APP_BASE_URL}
+      - DB_CLIENT=pg
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DATABASE=${DB_DATABASE}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PORT=5432
+      - POSTGRES_HOST=joplindb
+      - MAILER_ENABLED=1
+      - MAILER_HOST=${MAIL_HOST}
+      - MAILER_PORT=587
+      - MAILER_SECURITY=starttls
+      - MAILER_AUTH_USER=${MAIL_USER}
+      - MAILER_AUTH_PASSWORD=${MAIL_PASSWORD}
+      - MAILER_NOREPLY_NAME=JoplinServer
+      - MAILER_NOREPLY_EMAIL=${MAIL_EMAIL}
+      - MAX_TIME_DRIFT=0
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=dmz"
+      - "traefik.http.routers.joplin.rule=Host(`${HOST}`)"
+      - "traefik.http.routers.joplin.entrypoints=websecure"
+      - "traefik.http.routers.joplin.tls=true"
+      - "traefik.http.routers.joplin.tls.certresolver=letsencrypt"
+      - "traefik.http.services.joplin.loadbalancer.server.port=9001"
+      #- 'traefik.http.routers.joplin.middlewares=authelia@docker'
+    restart: always
+
+networks:
+  dmz:
+    external: true
+  joplin:
+    internal: true

@@ -1,0 +1,128 @@
+services:   
+  nextcloud-db:
+    container_name: nextcloud-db
+    image: postgres:14
+    networks:
+      nextcloud:
+    volumes:
+      - /pool/docker/nc-postgres/data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${DB_DATABASE}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    restart: always
+
+  nextcloud:
+    container_name: nextcloud
+    image: lscr.io/linuxserver/nextcloud:latest
+    networks:
+      nextcloud:
+      dmz:
+    environment:
+      - PUID=1000
+      - PGID=100
+      - TZ=Europe/Berlin
+      #- DOCKER_MODS=linuxserver/mods:universal-package-install
+      #- INSTALL_PACKAGES=libva|libva-intel-driver|intel-media-driver|mesa-va-gallium|poppler-utils
+    #devices:
+    #  - /dev/dri:/dev/dri
+    volumes:
+      - /pool/docker/nc-nextcloud/config:/config
+      - /pool/docker/nc-nextcloud/data:/data
+    tmpfs:
+      - /tmp:exec
+#    ports:
+#      - 9443:443
+    depends_on:
+      - "nextcloud-db"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=dmz"
+      - "traefik.http.routers.nextcloud.rule=Host(`${NC_HOST}`)"
+      - "traefik.http.routers.nextcloud.entrypoints=websecure"
+      - "traefik.http.routers.nextcloud.tls=true"
+      - "traefik.http.routers.nextcloud.tls.certresolver=letsencrypt"
+      - "traefik.http.services.nextcloud.loadbalancer.server.port=443"
+      - "traefik.http.services.nextcloud.loadbalancer.server.scheme=https"
+      - "traefik.http.routers.nextcloud.middlewares=default-headers@file"
+    restart: always
+
+  nextcloud-redis:
+    image: redis:alpine
+    container_name: nextcloud-redis
+    command: redis-server --requirepass ${REDIS_HOST_PASSWORD}
+    networks:
+      nextcloud:
+    restart: unless-stopped
+
+  collabora:
+    image: collabora/code:latest
+    container_name: collabora
+    networks:
+      dmz:
+#    privileged: true
+#    ports:
+#      - "9980:9980"
+    environment:
+      - aliasgroup1=${COLLABORA_ALIASGROUP}
+      - server_name=${COLLABORA_HOST}
+      - DONT_GEN_SSL_CERT=1
+      - username=${COLLABORA_USER}
+      - password=${COLLABORA_PASS}
+      - extra_params=--o:ssl.enable=false --o:ssl.termination=true
+    tty: true
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.collabora-nc.rule=Host(`${COLLABORA_HOST}`)"
+      - "traefik.http.routers.collabora-nc.entrypoints=websecure"
+      - "traefik.http.routers.collabora-nc.tls=true"
+      - "traefik.http.routers.collabora-nc.tls.certresolver=letsencrypt"
+      - "traefik.http.services.collabora-nc.loadbalancer.server.port=9980"
+    restart: always
+
+  nc-talk:
+    container_name: talk_hpb
+    image: ghcr.io/nextcloud-releases/aio-talk:latest
+    init: true
+#    ports:
+#      - 3478:3478/tcp
+#      - 3478:3478/udp
+#      - 8181:8081/tcp
+    networks:
+      dmz:
+        ipv4_address: 192.168.178.253
+    environment:
+      - NC_DOMAIN=${NC_HOST}
+      - TALK_HOST=${TALK_HOST}
+      - TURN_SECRET=${TURN_SECRET}
+      - SIGNALING_SECRET=${SIGNALING_SECRET}
+      - TZ=Europe/Berlin
+      - TALK_PORT=3478
+      - INTERNAL_SECRET=${INTERNAL_SECRET}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.signal.rule=Host(`${TALK_HOST}`)"
+      - "traefik.http.routers.signal.entrypoints=websecure"
+      - "traefik.http.routers.signal.tls=true"
+      - "traefik.http.routers.signal.tls.certresolver=letsencrypt"
+      - "traefik.http.services.signal.loadbalancer.server.port=8081"
+    restart: unless-stopped
+
+#  coturn:
+#    container_name: coturn
+#    image: coturn/coturn:latest
+#    networks:
+#      dmz:
+##    ports:
+##      - "10800:10800/tcp"
+##      - "10800:10800/udp"
+#    volumes:
+#      - /pool/docker/nc-coturn/turnserver.conf:/etc/coturn/turnserver.conf
+#      - /pool/docker/nc-coturn/data:/var/lib/coturn
+#    restart: always
+
+networks:
+  dmz:
+    external: true
+  nextcloud:
+    internal: true

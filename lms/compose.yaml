@@ -1,0 +1,27 @@
+services:
+  lms:
+    container_name: lms
+    image: lmscommunity/lyrionmusicserver:stable
+    environment:
+      - PUID=1000
+      - PGID=100
+      - HTTP_PORT=9000
+    volumes:
+      - /pool/docker/lms/config:/config:rw
+      - /srv/remotemount/music:/music:ro
+      - /pool/docker/lms/playlist:/playlist:rw
+      - /etc/localtime:/etc/localtime:ro
+      #- /etc/TZ:/etc/timezone:ro
+    #ports:
+    #  - 9000:9000/tcp
+    #  - 9090:9090/tcp
+    #  - 3483:3483/tcp
+    #  - 3483:3483/udp
+    networks:
+      lan:
+        ipv4_address: 192.168.1.51
+    restart: always
+
+networks:
+  lan:
+    external: true

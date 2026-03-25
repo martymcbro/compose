@@ -1,0 +1,15 @@
+services:
+  rclone:
+    container_name: rclone
+    image: rclone/rclone:latest
+    volumes:
+      - /pool/docker/rclone/config:/config/rclone
+      - /pool/docker/rclone/cache:/var/cache/rclone
+      - /mnt/apps:/data
+    command: rcd --cache-dir=/var/cache/rclone --rc-web-gui --rc-addr :5572 --rc-user ${RCLONE_USER} --rc-pass ${RCLONE_PASSWORD}
+    ports:
+      - "5572:5572"
+    user: "1000:100"
+    environment:
+      - TZ=Europe/Berlin
+    restart: always

@@ -1,0 +1,19 @@
+services:
+  code-server:
+    image: lscr.io/linuxserver/code-server:latest
+    container_name: code-server
+    environment:
+      - PUID=1000
+      - PGID=100
+      - TZ=Europe/Berlin
+      - PASSWORD=${PASSWORD}
+      - SUDO_PASSWORD=${SUDO_PASSWORD}
+      #- PROXY_DOMAIN=code-server.my.domain
+      - DEFAULT_WORKSPACE=/compose
+      - PWA_APPNAME=code-server
+    volumes:
+      - /pool/docker/code-server/config:/config
+      - /pool/compose:/compose
+    ports:
+      - 8443:8443
+    restart: unless-stopped

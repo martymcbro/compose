@@ -1,0 +1,15 @@
+services:
+  calibre-web-automated:
+    image: crocodilestick/calibre-web-automated:latest
+    container_name: cwa
+    ports:
+      - 8083:8083
+    environment:
+      - PUID=1000
+      - PGID=100
+      - TZ=Europe/Berlin
+    volumes:
+      - /pool/docker/calibrewebautomated/config:/config
+      - /pool/docker/calibrewebautomated/library:/calibre-library
+      - /pool/docker/calibrewebautomated/books:/cwa-book-ingest
+    restart: unless-stopped

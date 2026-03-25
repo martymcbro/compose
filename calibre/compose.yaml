@@ -1,0 +1,20 @@
+services:
+    calibre:
+        image: lscr.io/linuxserver/calibre:latest
+        container_name: calibre
+        security_opt:
+            - seccomp:unconfined #optional
+        ports:
+            - 8085:8080
+            - 8181:8181
+            - 8081:8081
+        environment:
+            - PUID=1000
+            - PGID=100
+            - TZ=Europe/Berlin
+            - CUSTOM_USER=${CUSTOM_USER}
+            - PASSWORD=${PASSWORD}
+            - CLI_ARGS=
+        volumes:
+            - /pool/docker/calibreweb/books:/config
+        restart: unless-stopped

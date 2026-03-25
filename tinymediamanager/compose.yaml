@@ -1,0 +1,23 @@
+version: "2.1"
+services:
+  tinymediamanager:
+    image: tinymediamanager/tinymediamanager:latest
+    container_name: tinymediamanager
+    environment:
+      - USER_ID=1000
+      - GROUP_ID=100
+      - ALLOW_DIRECT_VNC=false
+      - LC_ALL=de_DE.UTF-8 # force UTF8
+      - LANG=de_DE.UTF-8   # force UTF8
+      - PASSWORD=${PASSWORD}
+      - TZ=Europe/Berlin
+      - LC_TIME=C.UTF-8
+    volumes:
+      - /pool/docker/tinymediamanager/data:/data
+      - /pool/docker/tinymediamanager/addons:/app/addons
+      - /srv/remotemount/movies:/media/movies
+      - /srv/remotemount/series:/media/series
+    ports:
+      - 5900:5900 # VNC port
+      - 4000:4000 # Webinterface
+    restart: unless-stopped

@@ -1,0 +1,24 @@
+services:
+  free-games-claimer:
+    container_name: freegamesclaimer
+    image: ghcr.io/vogler/free-games-claimer:dev
+    pull_policy: always
+    stdin_open: true
+    tty: true
+    ports:
+      - 6080:6080
+    volumes:
+      - /pool/docker/freegames:/fgc/data
+    environment:
+      - PUID=1000
+      - PGID=100
+      - EG_EMAIL=${EG_EMAIL}
+      - EG_PASSWORD=${EG_PASSWORD}
+      - GOG_EMAIL=${GOG_EMAIL}
+      - GOG_PASSWORD=${GOG_PASSWORD}
+      - PG_EMAIL=${PG_EMAIL}
+      - PG_PASSWORD=${PG_PASSWORD}
+      - PG_OTPKEY=${PG_OTPKEY}
+    command: bash -c "node prime-gaming; node gog"
+    #command: bash -c "node epic-games; node prime-gaming; node gog; echo sleeping; sleep 1d"
+    #restart: unless-stopped

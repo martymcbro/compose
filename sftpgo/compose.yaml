@@ -1,0 +1,19 @@
+services:
+    sftpgo:
+        image: drakkan/sftpgo:latest
+        container_name: sftpgo
+        ports:
+          - 8100:8080
+          - 2022:2022
+          - 21:21
+          - 50000-50100:50000-50100
+        user: "1000:100"
+        environment:
+          SFTPGO_FTPD__BINDINGS__0__PORT: 21
+          SFTPGO_FTPD__BINDINGS__0__FORCE_PASSIVE_IP: 192.168.1.24
+        volumes:
+          - /pool/docker/sftpgo/backups:/srv/sftpgo/backups
+          - /pool/docker/sftpgo/home:/var/lib/sftpgo
+          - /pool/docker/paperless-ngx/consume:/srv/sftpgo/data/paperless
+          #- /mnt/user/scans:/srv/sftpgo/data/epson
+        restart: always

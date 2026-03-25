@@ -1,0 +1,70 @@
+services:    
+  homeassistant:
+    container_name: homeassistant
+    hostname: homeassistant
+    image: "ghcr.io/home-assistant/home-assistant:stable"
+    networks:
+      default:
+      lan:
+        ipv4_address: 192.168.1.55
+#    devices:
+#      - /dev/ttyACM0
+    volumes:
+      - "/pool/docker/ha-homeassistant/config:/config"
+    environment:
+      TZ: "Europe/Berlin"
+    restart: always
+
+  music-assistant-server:
+    image: ghcr.io/music-assistant/server:latest # <<< Desired release version here (or use beta to get the latest beta version)
+    container_name: music-assistant-server
+    restart: unless-stopped
+    networks:
+      lan:
+        ipv4_address: 192.168.1.54
+    volumes:
+      - /pool/docker/ha-musicassistant/data:/data
+    # privileged caps (and security-opt) needed to mount smb folders within the container
+    cap_add:
+      - SYS_ADMIN
+      - DAC_READ_SEARCH
+    security_opt:
+      - apparmor:unconfined
+    environment:
+      # Provide logging level as environment variable.
+      # default=info, possible=(critical, error, warning, info, debug)
+      - LOG_LEVEL=info
+  
+  piper:
+    container_name: piper
+    image: rhasspy/wyoming-piper
+    command: --voice de_DE-karlsson-low
+    volumes:
+      - /pool/docker/ha-piper/data:/data
+    environment:
+      - TZ=Europe/Berlin
+    restart: always 
+
+  #whisper:
+  #  container_name: whisper
+  #  image: rhasspy/wyoming-whisper
+  #  command: --beam-size 3 --model base-int8 --language de
+  #  volumes:
+  #    - /home/martin/docker/ha-whisper/data:/data
+  #  environment:
+  #    - TZ=Europe/Berlin
+  #  restart: always
+
+  #openwakeword:
+  #  container_name: openwakeword
+  #  image: rhasspy/wyoming-openwakeword
+  #  command: --preload-model 'alexa'
+  #  volumes:
+  #    - /pool/docker/ha-openwakeword/data:/data
+  #  environment:
+  #    - TZ=Europe/Berlin
+  #  restart: always
+    
+networks:
+    lan:
+      external: true

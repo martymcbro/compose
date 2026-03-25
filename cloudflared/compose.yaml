@@ -1,0 +1,17 @@
+services:
+  cloudflared:
+    container_name: cloudflared
+    hostname: cloudflared
+    image: cloudflare/cloudflared
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=${TOKEN}
+    networks:
+      default:
+      lan:
+        ipv4_address: 192.168.1.56
+    restart: always
+
+networks:
+  lan:
+    external: true

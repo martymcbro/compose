@@ -1,0 +1,38 @@
+services:
+  mosquitto:
+    container_name: mosquitto
+    hostname: mosquitto
+    image: eclipse-mosquitto
+    volumes:
+      - /pool/docker/mosquitto/config:/mosquitto/config
+      - /pool/docker/mosquitto/data:/mosquitto/data
+      - /pool/docker/mosquitto/log:/mosquitto/log
+    #ports:
+    #  - 1883:1883
+    #  - 9001:9001
+    networks:
+      lan:
+        ipv4_address: 192.168.1.52
+    restart: always
+
+  zigbee2mqtt:
+    container_name: zigbee2mqtt
+    hostname: zigbee2mqtt
+    restart: always
+    image: koenkk/zigbee2mqtt
+    volumes:
+      - /pool/docker/zigbee2mqtt/data:/app/data
+      - /run/udev:/run/udev:ro
+#    ports:
+#      - 8080:8080
+    environment:
+      - TZ=Europe/Berlin
+    devices:
+      - /dev/ttyACM0
+    networks:
+      lan:
+        ipv4_address: 192.168.1.58
+    
+networks:
+    lan:
+      external: true

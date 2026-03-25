@@ -1,0 +1,22 @@
+services:
+  tvheadend:
+    container_name: tvheadend
+    image: lscr.io/linuxserver/tvheadend:latest
+    #ports:
+    #  - 9981/tcp
+    #  - 9982/tcp
+    network_mode: "host"
+    environment:
+      - PUID=1000
+      - PGID=100
+      - TZ=Europe/Berlin
+#      - RUN_OPTS= #optional
+    volumes:
+      - /pool/docker/tvheadend/config:/config
+      #- /srv/remotemount/recordings:/recordings
+      - /pool/recordings/:/recordings
+      - /pool/timeshift:/timeshift
+    devices:
+      - /dev/dri:/dev/dri #optional
+      - /dev/dvb:/dev/dvb #optional
+    restart: always

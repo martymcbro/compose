@@ -1,0 +1,37 @@
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: unless-stopped
+    environment:
+      DOMAIN: ${DOMAIN}
+      SIGNUPS_ALLOWED: false
+      SIGNUPS_VERIFY: true
+      PASSWORD_HINTS_ALLOWED: false
+      INVITATIONS_ALLOWED: false
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_FROM: ${SMTP_FROM}
+      SMTP_FROM_NAME: Vaultwarden
+      SMTP_USERNAME: ${SMTP_USERNAME}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      SMTP_TIMEOUT: 15
+      SMTP_SECURITY: ${SMTP_SECURITY}
+      SMTP_PORT: ${SMTP_PORT}
+      #ADMIN_TOKEN: ${VAULTWARDEN_ADMIN_TOKEN}
+    volumes:
+      - /pool/docker/vaultwarden/data/:/data/
+    networks:
+      dmz:
+    #ports:
+    #  - 127.0.0.1:8000:80
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vaultwarden.rule=Host(`${HOST}`)"
+      - "traefik.http.routers.vaultwarden.entrypoints=websecure"
+      - "traefik.http.routers.vaultwarden.tls=true"
+      - "traefik.http.routers.vaultwarden.tls.certresolver=letsencrypt"
+      - "traefik.http.services.vaultwarden.loadbalancer.server.port=80"
+
+networks:
+  dmz:
+    external: true

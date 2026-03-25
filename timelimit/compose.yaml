@@ -1,0 +1,56 @@
+services:
+  api:
+    #image: 'ghcr.io/michaelsp/timelimit-server/timelimit:v2.43.0'
+    build: /pool/docker/timelimit/timelimit-server
+    container_name: timelimit
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: mariadb://${MYSQL_USER}:${MYSQL_PASSWORD}@timelimit-db:3306/timelimit
+      PORT: 8080
+      MAIL_SENDER: ${MAIL_SENDER}
+      MAIL_TRANSPORT: ${MAIL_TRANSPORT}
+      ALWAYS_PRO: 'yes'
+      # put additional config variables here
+    networks:
+      dmz:
+      timelimit:
+    #ports:
+    # - "8080:8080"
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=dmz"
+      - "traefik.http.routers.timelimit.rule=Host(`${HOST}`)"
+      - "traefik.http.routers.timelimit.entrypoints=websecure"
+      - "traefik.http.routers.timelimit.middlewares=default-whitelist@file"
+      - "traefik.http.routers.timelimit.tls=true"
+      - "traefik.http.routers.timelimit.tls.certresolver=letsencrypt"
+      - "traefik.http.services.timelimit.loadbalancer.server.port=8080"
+    # you can enable logging during testing by commenting this out,
+    # but logging is not needed when everything works
+    logging:
+      driver: none
+    links:
+    - database
+  database:
+    image: 'mariadb:10'
+    container_name: timelimit-db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+     - /pool/docker/timelimit/database:/var/lib/mysql
+    networks:
+      timelimit:
+    # you can enable logging during testing by commenting this out,
+    # but logging is not needed when everything works
+    logging:
+      driver: none
+
+networks:
+  dmz:
+    external: true
+  timelimit:
+    internal: true
