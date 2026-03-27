@@ -7,5 +7,5 @@ services:
       - /pool/docker/filebrowserquantum/config.yaml:/home/filebrowser/data/config.yaml:ro
       - /pool/docker/filebrowserquantum/data:/home/filebrowser/data
     ports:
-      - 8080:80
+      - 8042:80
     restart: unless-stopped
