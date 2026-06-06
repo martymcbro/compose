@@ -1,7 +1,7 @@
 services:
   free-games-claimer:
     container_name: freegamesclaimer
-    image: ghcr.io/vogler/free-games-claimer:dev
+    image: ghcr.io/vogler/free-games-claimer
     pull_policy: always
     stdin_open: true
     tty: true
