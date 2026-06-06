@@ -1,0 +1,57 @@
+services:
+  free-games-claimer:
+    container_name: free-games-claimer-dev
+    build:
+      context: https://github.com/DoSpamu/free-games-claimer.git#master
+    restart: unless-stopped
+    ports:
+      - "6080:6080"   # noVNC — browser preview
+      #- "5900:5900"   # VNC
+    volumes:
+      - /pool/docker/fgc:/fgc/data
+
+    # Choose platforms — remove or add script names.
+    # sleep calculates seconds until next 07:00.
+    command: >
+      bash -c "node run.js prime-gaming gog epic-games;
+      sleep $$(( $$(date -d 'tomorrow 07:00' +%s) - $$(date +%s) ))s"
+
+    environment:
+      - TZ=Europe/Berlin
+      - SHOW=1
+      - LOG_LEVEL=INFO
+      - PUID=1000
+      - PGID=100
+
+      # ------ Discord (required for notifications) ------
+      #- DISCORD_WEBHOOK=https://discord.com/api/webhooks/YOUR_ID/TOKEN
+
+      # ------ VNC ------
+      # - VNC_PASSWORD=secretpassword   # recommended!
+
+      # ------ AliExpress ------
+      #- ALIEXPRESS_EMAIL=your@email.com
+      #- ALIEXPRESS_PASSWORD=yourpassword
+
+      # ------ Other platforms (OPTIONAL) ------
+      # Log in once manually via noVNC (http://IP:6080) — session is saved.
+      # Or set credentials here for fully automatic login:
+      # - EMAIL=your@email.com        # shared for all platforms
+      # - PASSWORD=yourpassword
+      - EG_EMAIL=${EG_EMAIL}
+      - EG_PASSWORD=${EG_PASSWORD}
+      - EG_OTPKEY=${EG_OTPKEY}
+      - GOG_EMAIL=${GOG_EMAIL}
+      - GOG_PASSWORD=${GOG_PASSWORD}
+      - PG_EMAIL=${PG_EMAIL}
+      - PG_PASSWORD=${PG_PASSWORD}
+      - PG_OTPKEY=${PG_OTPKEY}
+      # - STEAM_USERNAME=             # Steam login name (not email)
+      # - STEAM_PASSWORD=
+
+    healthcheck:
+      test: curl --fail http://localhost:6080 || exit 1
+      interval: 30s
+      timeout: 10s
+      start_period: 20s
+      retries: 3
