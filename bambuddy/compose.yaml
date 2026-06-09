@@ -60,8 +60,8 @@ services:
     # forgo discovery (add printers by IP) can stay on bridge with the
     # narrowed range above.
     volumes:
-      - /pool/docker/bambubuddy/data:/app/data
-      - /pool/docker/bambubuddy/logs:/app/logs
+      - /pool/docker/bambuddy/data:/app/data
+      - /pool/docker/bambuddy/logs:/app/logs
       #
       # OPTIONAL — only needed if you ALSO run a native install of Bambuddy
       # on the same host and want both installs to share the same Virtual
