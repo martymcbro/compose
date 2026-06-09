@@ -24,7 +24,7 @@ services:
       - PGID=100
 
       # ------ Discord (required for notifications) ------
-      #- DISCORD_WEBHOOK=https://discord.com/api/webhooks/YOUR_ID/TOKEN
+      - DISCORD_WEBHOOK=${DISCORD_WEBHOOK}
 
       # ------ VNC ------
       # - VNC_PASSWORD=secretpassword   # recommended!
