@@ -13,8 +13,8 @@ services:
 #      - RUN_OPTS= #optional
     volumes:
       - /pool/docker/tvheadend/config:/config
-      - /mnt/recordings:/recordings
-      #- /pool/recordings/:/recordings
+      #- /mnt/recordings:/recordings
+      - /pool/recordings/:/recordings
       - /pool/timeshift:/timeshift
     devices:
       #- /dev/dri:/dev/dri #optional
