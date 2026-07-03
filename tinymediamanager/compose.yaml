@@ -15,8 +15,8 @@ services:
     volumes:
       - /pool/docker/tinymediamanager/data:/data
       - /pool/docker/tinymediamanager/addons:/app/addons
-      - /srv/remotemount/movies:/media/movies
-      - /srv/remotemount/series:/media/series
+      - /mnt/movies:/media/movies
+      - /mnt/series:/media/series
     ports:
       - 5900:5900 # VNC port
       - 4000:4000 # Webinterface

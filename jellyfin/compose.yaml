@@ -13,8 +13,8 @@ services:
       - /dev/dri:/dev/dri
       - /pool/docker/jellyfin/config:/config
       - /pool/docker/jellyfin/cache:/cache
-      - /srv/remotemount/movies:/media
-      - /srv/remotemount/series:/media2
+      - /mnt/movies:/media
+      - /mnt/series:/media2
     restart: always
     # Optional - alternative address used for autodiscovery
     #environment:

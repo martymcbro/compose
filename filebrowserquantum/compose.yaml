@@ -3,7 +3,7 @@ services:
     image: gtstef/filebrowser:stable
     volumes:
       - /pool:/pool # Do not use a root "/" directory or include the "/var" folder
-      - /srv/remotemount:/srv/remotemount
+      - /mnt:/mnt
       - /pool/docker/filebrowserquantum/config.yaml:/home/filebrowser/data/config.yaml:ro
       - /pool/docker/filebrowserquantum/data:/home/filebrowser/data
     ports:
