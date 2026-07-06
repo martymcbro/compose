@@ -10,9 +10,10 @@ services:
       - MANAGER_API_URL=${MANAGER_API_URL}
       - PUID=1000
       - PGID=100
+      - PROJECTS_DIRECTORY=/pool/compose
     ports:
       - "3553:3553"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /pool/docker/arcane-agent/data:/app/data
-      - /pool/compose:/app/data/projects
+      - /pool/compose:/pool/compose
