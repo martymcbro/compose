@@ -8,11 +8,12 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /pool/docker/arcane/data:/app/data
       - /pool/docker/timelimit/timelimit-server:/pool/docker/timelimit/timelimit-server
-      - /pool/compose/:/app/data/projects
+      - /pool/compose:/pool/compose
     environment:
       - APP_URL=${APP_URL}
       - PUID=1000
       - PGID=100
       - ENCRYPTION_KEY=${ENCRYPTION_KEY}
       - JWT_SECRET=${JWT_SECRET}
+      - PROJECTS_DIRECTORY=/pool/compose
     restart: unless-stopped
