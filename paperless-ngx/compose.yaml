@@ -85,3 +85,4 @@ services:
 # documents are written in.
       PAPERLESS_OCR_LANGUAGE: deu
       PAPERLESS_CONSUMER_RECURSIVE: true
+      PAPERLESS_SECRET_KEY: ${PAPERLESS_SECRET_KEY}
