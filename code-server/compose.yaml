@@ -4,16 +4,31 @@ services:
     container_name: code-server
     environment:
       - PUID=1000
-      - PGID=100
+      - PGID=1000
       - TZ=Europe/Berlin
-      - PASSWORD=${PASSWORD}
+      #- PASSWORD=${PASSWORD}
       - SUDO_PASSWORD=${SUDO_PASSWORD}
-      #- PROXY_DOMAIN=code-server.my.domain
-      - DEFAULT_WORKSPACE=/compose
+      - PROXY_DOMAIN=${PROXY_DOMAIN}
+      - DEFAULT_WORKSPACE=/workspace
       - PWA_APPNAME=code-server
     volumes:
       - /pool/docker/code-server/config:/config
-      - /pool/compose:/compose
-    ports:
-      - 8443:8443
+      - /pool/docker/code-server/workspace:/workspace
+    networks:
+      dmz:
+    #ports:
+    #  - 8443:8443
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=dmz"
+      - "traefik.http.routers.code.rule=Host(`${PROXY_DOMAIN}`)"
+      - "traefik.http.routers.code.entrypoints=websecure"
+      - "traefik.http.routers.code.tls=true"
+      - "traefik.http.routers.code.tls.certresolver=letsencrypt"
+      - "traefik.http.services.code.loadbalancer.server.port=8443"
+      - "traefik.http.routers.code.middlewares=default-headers@file,authelia@docker"
     restart: unless-stopped
+
+networks:
+  dmz:
+    external: true
