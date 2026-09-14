@@ -8,8 +8,8 @@ services:
     user: 1000:100
     volumes:
       - ${UPLOAD_LOCATION}:/usr/src/app/upload
-      - ${EXTERNAL_PATH}/library:/usr/src/app/upload/library
-      - ${EXTERNAL_PATH}:/usr/src/app/external
+      - ${LIBRARY_PATH}/library:/usr/src/app/upload/library
+      - ${EXTERNAL_PATH}:/mnt/external
       - /etc/localtime:/etc/localtime:ro
     env_file:
       - .env
@@ -44,7 +44,7 @@ services:
     #  - /dev/bus/usb:/dev/bus/usb
       - model-cache:/cache  
     networks:
-      immich:
+      dmz:
     env_file:
       - .env
     labels:
