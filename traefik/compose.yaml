@@ -13,8 +13,6 @@ services:
     networks:
       dmz:
         ipv4_address: 192.168.178.254
-    depends_on:
-      - bouncer-traefik
     #ports:
     #  - 80:80 # HTTP entryPoints
     #  - 443:443 # HTTPS entryPoints
@@ -41,33 +39,33 @@ services:
   crowdsec:
     image: crowdsecurity/crowdsec:latest
     container_name: crowdsec
-    environment:
-      GID: "${GID-100}"
-      COLLECTIONS: "crowdsecurity/linux crowdsecurity/traefik"
+    restart: unless-stopped
+    ports:
+      - 127.0.0.1:9876:8080 # port mapping for local firewall bouncers
+    expose:
+      - 8080 # http api for bouncers
+      - 6060 # metrics endpoint for prometheus
+      - 7422 # appsec waf endpoint
     volumes:
+      # crowdsec container data
+      #- ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/crowdsec/data:/var/lib/crowdsec/data
+      #- ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/crowdsec/etc:/etc/crowdsec
       - /pool/docker/crowdsec/acquis.yaml:/etc/crowdsec/acquis.yaml
       - /pool/docker/crowdsec/db:/var/lib/crowdsec/data/
       - /pool/docker/crowdsec/config:/etc/crowdsec/
+      # log bind mounts into crowdsec
+      #- /var/log/auth.log:/var/log/auth.log:ro
+      #- /var/log/syslog:/var/log/syslog:ro
+      #- ${DOCKER_VOLUME_STORAGE:-/mnt/docker-volumes}/traefik/logs:/var/log/traefik:ro
       - /pool/docker/traefik/logs:/var/log/traefik/:ro
-    networks:
-      dmz:
-    security_opt:
-      - no-new-privileges:true
-    restart: unless-stopped
-
-  bouncer-traefik:
-    image: docker.io/fbonalair/traefik-crowdsec-bouncer:latest
-    container_name: bouncer-traefik
     environment:
-      CROWDSEC_BOUNCER_API_KEY: ${CROWDSEC_BOUNCER_API_KEY}
-      CROWDSEC_AGENT_HOST: crowdsec:8080
+      GID: "${GID-100}"
+      COLLECTIONS: "crowdsecurity/linux crowdsecurity/traefik"
+      #- GID=1000
+      #- COLLECTIONS=crowdsecurity/traefik crowdsecurity/http-cve crowdsecurity/base-http-scenarios crowdsecurity/sshd crowdsecurity/linux crowdsecurity/appsec-generic-rules crowdsecurity/appsec-virtual-patching crowdsecurity/appsec-crs crowdsecurity/appsec-bot-challenge
+      #- CUSTOM_HOSTNAME=my-crowdsec-host123
     networks:
-      dmz:
-    depends_on:
-      - crowdsec
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
+      - dmz
 
 networks:
   dmz:
