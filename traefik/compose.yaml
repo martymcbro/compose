@@ -60,12 +60,32 @@ services:
       - /pool/docker/traefik/logs:/var/log/traefik/:ro
     environment:
       GID: "${GID-100}"
-      COLLECTIONS: "crowdsecurity/linux crowdsecurity/traefik"
+      COLLECTIONS: "crowdsecurity/traefik crowdsecurity/http-cve crowdsecurity/base-http-scenarios crowdsecurity/linux"
       #- GID=1000
       #- COLLECTIONS=crowdsecurity/traefik crowdsecurity/http-cve crowdsecurity/base-http-scenarios crowdsecurity/sshd crowdsecurity/linux crowdsecurity/appsec-generic-rules crowdsecurity/appsec-virtual-patching crowdsecurity/appsec-crs crowdsecurity/appsec-bot-challenge
       #- CUSTOM_HOSTNAME=my-crowdsec-host123
     networks:
       - dmz
+
+  crowdsec-web-ui:
+    image: ghcr.io/theduffman85/crowdsec-web-ui:latest
+    container_name: crowdsec_web_ui
+    #ports:
+    #  - "3000:3000"
+    # For local CrowdSec instances
+    # extra_hosts:
+      # - "host.docker.internal:host-gateway"
+    environment:
+      CONFIG_INSTANCE_LAPI_URL: http://crowdsec:8080
+      # For local CrowdSec instances
+      # CONFIG_INSTANCE_LAPI_URL: http://host.docker.internal:8080
+      CONFIG_INSTANCE_LAPI_AUTH_USERNAME: ${CONFIG_INSTANCE_LAPI_AUTH_USERNAME}
+      CONFIG_INSTANCE_LAPI_AUTH_PASSWORD: ${CONFIG_INSTANCE_LAPI_AUTH_PASSWORD}
+    volumes:
+      - /pool/docker/crowdsec-web-ui/data:/app/data
+    networks:
+      - dmz
+    restart: unless-stopped
 
 networks:
   dmz:
