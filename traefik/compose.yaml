@@ -86,6 +86,13 @@ services:
     networks:
       - dmz
     restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.crowdsec.rule=Host(`${CS_HOST}`)"
+      - "traefik.http.routers.crowdsec.entrypoints=websecure"
+      - "traefik.http.routers.crowdsec.tls=true"
+      - "traefik.http.routers.crowdsec.tls.certresolver=letsencrypt"
+      - "traefik.http.services.crowdsec.loadbalancer.server.port=3000"
 
 networks:
   dmz:
