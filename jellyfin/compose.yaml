@@ -15,6 +15,7 @@ services:
       - /pool/docker/jellyfin/cache:/cache
       - /mnt/movies:/media
       - /mnt/series:/media2
+      - /mnt/videos:/media3
     restart: always
     # Optional - alternative address used for autodiscovery
     #environment:
