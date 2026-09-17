@@ -16,7 +16,6 @@ services:
     #ports:
     #  - 80:2283
     labels:
-      - "com.getarcaneapp.arcane.updater=false"
       - "traefik.enable=true"
       - "traefik.docker.network=dmz"
       - "traefik.http.routers.immich.rule=Host(`${HOST}`)"
@@ -47,8 +46,6 @@ services:
       dmz:
     env_file:
       - .env
-    labels:
-      - "com.getarcaneapp.arcane.updater=false"
     restart: always
 
   redis:
@@ -56,8 +53,6 @@ services:
     image: registry.hub.docker.com/library/redis:6.2-alpine@sha256:84882e87b54734154586e5f8abd4dce69fe7311315e2fc6d67c29614c8de2672  
     networks:
       immich:
-    labels:
-      - "com.getarcaneapp.arcane.updater=false"
     restart: always
 
   database:
@@ -75,8 +70,6 @@ services:
       POSTGRES_DB: ${DB_DATABASE_NAME}
     volumes:
       - ${DB_DATA_LOCATION}:/var/lib/postgresql/data
-    labels:
-      - "com.getarcaneapp.arcane.updater=false"
     restart: always
 
 volumes:
