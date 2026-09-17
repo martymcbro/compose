@@ -1,0 +1,17 @@
+services:
+  ledfx:
+    image: ghcr.io/ledfx/ledfx:edge
+    container_name: ledfx
+    restart: on-failure:3
+    #network_mode: host
+    command: ["--offline", "--clear-effects"] #optional command line arguments passed to LedFx
+    volumes:
+    - /pool/docker/ledfx/config:/home/ledfx/ledfx-config:rw # Path to LedFx configuration files
+    - /pool/docker/ledfx/pulse:/home/ledfx/.config/pulse:rw # Necessary when running in pulseaudio server mode. /path/to/ledfx/pulse should be with read write access for UID:GID=1000:1000
+    networks:
+      lan:
+        ipv4_address: 192.168.1.52
+
+networks:
+  lan:
+    external: true
