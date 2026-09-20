@@ -2,7 +2,7 @@ services:
   server:
     image: gotify/server
     networks:
-      dmz:
+      proxy:
     environment:
       - TZ=Europe/Berlin
     volumes:
@@ -17,5 +17,5 @@ services:
     restart: unless-stopped
 
 networks:
-  dmz:
+  proxy:
     external: true

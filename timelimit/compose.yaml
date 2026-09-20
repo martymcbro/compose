@@ -12,14 +12,14 @@ services:
       ALWAYS_PRO: 'yes'
       # put additional config variables here
     networks:
-      dmz:
+      proxy:
       timelimit:
     #ports:
     # - "8080:8080"
     restart: always
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=dmz"
+      - "traefik.docker.network=proxy"
       - "traefik.http.routers.timelimit.rule=Host(`${HOST}`)"
       - "traefik.http.routers.timelimit.entrypoints=websecure"
       - "traefik.http.routers.timelimit.middlewares=default-whitelist@file"
@@ -50,7 +50,7 @@ services:
       driver: none
 
 networks:
-  dmz:
+  proxy:
     external: true
   timelimit:
     internal: true

@@ -5,7 +5,7 @@ services:
     volumes:
       - '/pool/docker/authelia/config:/config'
     networks:
-      dmz:
+      proxy:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.authelia.rule=Host(`${HOST}`)"
@@ -25,5 +25,5 @@ services:
       TZ: 'Europe/Berlin'
 
 networks:
-  dmz:
+  proxy:
     external: true

@@ -11,12 +11,11 @@ services:
       - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
       - TRAEFIK_DASHBOARD_CREDENTIALS=${TRAEFIK_DASHBOARD_CREDENTIALS}
     networks:
-      dmz:
-        ipv4_address: 192.168.178.254
-    #ports:
-    #  - 80:80 # HTTP entryPoints
-    #  - 443:443 # HTTPS entryPoints
-    #  - 8080:8080 # Dashbaord WebGui 
+      proxy:
+    ports:
+      - 80:80 # HTTP entryPoints
+      - 443:443 # HTTPS entryPoints
+      - 8080:8080 # Dashbaord WebGui 
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /pool/docker/traefik/traefik.yml:/traefik.yml:ro
@@ -33,7 +32,7 @@ services:
       - "traefik.http.routers.traefik-secure.tls.certresolver=letsencrypt"
       - "traefik.http.routers.traefik-secure.tls.domains[0].main=${DOMAIN_MAIN}"
       - "traefik.http.routers.traefik-secure.tls.domains[0].sans=${DOMAIN_SANS}"
-      - "traefik.http.services.traefik.loadbalancer.server.port=2283"
+      - "traefik.http.services.traefik.loadbalancer.server.port=8080"
       - "traefik.http.routers.traefik-secure.service=api@internal"
 
   crowdsec:
@@ -65,13 +64,13 @@ services:
       #- COLLECTIONS=crowdsecurity/traefik crowdsecurity/http-cve crowdsecurity/base-http-scenarios crowdsecurity/sshd crowdsecurity/linux crowdsecurity/appsec-generic-rules crowdsecurity/appsec-virtual-patching crowdsecurity/appsec-crs crowdsecurity/appsec-bot-challenge
       #- CUSTOM_HOSTNAME=my-crowdsec-host123
     networks:
-      - dmz
+      - proxy
 
   crowdsec-web-ui:
     image: ghcr.io/theduffman85/crowdsec-web-ui:latest
     container_name: crowdsec_web_ui
-    #ports:
-    #  - "3000:3000"
+    ports:
+      - "3000:3000"
     # For local CrowdSec instances
     # extra_hosts:
       # - "host.docker.internal:host-gateway"
@@ -84,7 +83,7 @@ services:
     volumes:
       - /pool/docker/crowdsec-web-ui/data:/app/data
     networks:
-      - dmz
+      - proxy
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
@@ -95,5 +94,5 @@ services:
       - "traefik.http.services.crowdsec.loadbalancer.server.port=3000"
 
 networks:
-  dmz:
+  proxy:
     external: true

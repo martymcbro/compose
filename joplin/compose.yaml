@@ -17,7 +17,7 @@ services:
     image: joplin/server:latest
     networks:
       joplin:
-      dmz:
+      proxy:
     depends_on:
       - joplindb
     environment:
@@ -42,7 +42,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=dmz"
+      - "traefik.docker.network=proxy"
       - "traefik.http.routers.joplin.rule=Host(`${HOST}`)"
       - "traefik.http.routers.joplin.entrypoints=websecure"
       - "traefik.http.routers.joplin.tls=true"
@@ -52,7 +52,7 @@ services:
     restart: always
 
 networks:
-  dmz:
+  proxy:
     external: true
   joplin:
     internal: true

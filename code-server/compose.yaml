@@ -15,12 +15,11 @@ services:
       - /pool/docker/code-server/config:/config
       - /pool/docker/code-server/workspace:/workspace
     networks:
-      dmz:
+      proxy:
     #ports:
     #  - 8443:8443
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=dmz"
       - "traefik.http.routers.code.rule=Host(`${PROXY_DOMAIN}`)"
       - "traefik.http.routers.code.entrypoints=websecure"
       - "traefik.http.routers.code.tls=true"
@@ -30,5 +29,5 @@ services:
     restart: unless-stopped
 
 networks:
-  dmz:
+  proxy:
     external: true

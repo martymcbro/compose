@@ -3,8 +3,7 @@ services:
     image: 'jc21/nginx-proxy-manager:latest'
     container_name: nginxproxymanager
     networks:
-      dmz:
-        ipv4_address: 192.168.178.250
+      proxy:
     ports:
       # These ports are in format <host-port>:<container-port>
       - '80:80' # Public HTTP Port
@@ -28,5 +27,5 @@ services:
     restart: always
 
 networks:
-  dmz:
+  proxy:
     external: true

@@ -17,7 +17,7 @@ services:
     image: lscr.io/linuxserver/nextcloud:latest
     networks:
       nextcloud:
-      dmz:
+      proxy:
     environment:
       - PUID=1000
       - PGID=100
@@ -37,7 +37,7 @@ services:
       - "nextcloud-db"
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=dmz"
+      - "traefik.docker.network=proxy"
       - "traefik.http.routers.nextcloud.rule=Host(`${NC_HOST}`)"
       - "traefik.http.routers.nextcloud.entrypoints=websecure"
       - "traefik.http.routers.nextcloud.tls=true"
@@ -59,7 +59,7 @@ services:
     image: collabora/code:latest
     container_name: collabora
     networks:
-      dmz:
+      proxy:
 #    privileged: true
 #    ports:
 #      - "9980:9980"
@@ -84,13 +84,12 @@ services:
     container_name: talk_hpb
     image: ghcr.io/nextcloud-releases/aio-talk:latest
     init: true
-#    ports:
-#      - 3478:3478/tcp
-#      - 3478:3478/udp
+    ports:
+      - 3478:3478/tcp
+      - 3478:3478/udp
 #      - 8181:8081/tcp
     networks:
-      dmz:
-        ipv4_address: 192.168.178.253
+      proxy:
     environment:
       - NC_DOMAIN=${NC_HOST}
       - TALK_HOST=${TALK_HOST}
@@ -112,7 +111,7 @@ services:
 #    container_name: coturn
 #    image: coturn/coturn:latest
 #    networks:
-#      dmz:
+#      proxy:
 ##    ports:
 ##      - "10800:10800/tcp"
 ##      - "10800:10800/udp"
@@ -122,7 +121,7 @@ services:
 #    restart: always
 
 networks:
-  dmz:
+  proxy:
     external: true
   nextcloud:
     internal: true

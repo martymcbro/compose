@@ -4,7 +4,7 @@ services:
     image: ghcr.io/immich-app/immich-server:${IMMICH_VERSION:-release}
     networks:
       immich:
-      dmz:
+      proxy:
     user: 1000:100
     volumes:
       - ${UPLOAD_LOCATION}:/usr/src/app/upload
@@ -17,7 +17,7 @@ services:
     #  - 80:2283
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=dmz"
+      - "traefik.docker.network=proxy"
       - "traefik.http.routers.immich.rule=Host(`${HOST}`)"
       - "traefik.http.routers.immich.entrypoints=websecure"
       - "traefik.http.routers.immich.middlewares=default-headers@file"
@@ -43,7 +43,7 @@ services:
     #  - /dev/bus/usb:/dev/bus/usb
       - model-cache:/cache  
     networks:
-      dmz:
+      proxy:
     env_file:
       - .env
     restart: always
@@ -76,7 +76,7 @@ volumes:
   model-cache:
 
 networks:
-  dmz:
+  proxy:
     external: true
   immich:
     internal: true

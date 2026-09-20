@@ -11,7 +11,7 @@ services:
       - /pool/docker/ntfy/cache:/var/cache/ntfy
       - /pool/docker/ntfy/config:/etc/ntfy
     networks:
-      dmz:
+      proxy:
     #ports:
     #  - 80:80
     healthcheck: # optional: remember to adapt the host:port to your environment
@@ -31,5 +31,5 @@ services:
     init: true # needed, if healthcheck is used. Prevents zombie processes
 
 networks:
-  dmz:
+  proxy:
     external: true
