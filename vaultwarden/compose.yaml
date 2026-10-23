@@ -32,6 +32,39 @@ services:
       - "traefik.http.routers.vaultwarden.tls.certresolver=letsencrypt"
       - "traefik.http.services.vaultwarden.loadbalancer.server.port=80"
 
+  backup:
+    image: ttionya/vaultwarden-backup:latest
+    restart: always
+    environment:
+       RCLONE_REMOTE_NAME: ${RCLONE_REMOTE_NAME}
+       RCLONE_REMOTE_DIR: ${RCLONE_REMOTE_DIR}
+       RCLONE_GLOBAL_FLAG: ''
+       CRON: '30 23 * * *'
+       ZIP_ENABLE: 'TRUE'
+       ZIP_PASSWORD: ${ZIP_PASSWORD}
+       ZIP_TYPE: 'zip'
+       BACKUP_FILE_SUFFIX: '%Y%m%d'
+       BACKUP_KEEP_DAYS: 90
+    #   PING_URL: ''
+    #   PING_URL_CURL_OPTIONS: ''
+    #   PING_URL_WHEN_START: ''
+    #   PING_URL_WHEN_START_CURL_OPTIONS: ''
+    #   PING_URL_WHEN_SUCCESS: ''
+    #   PING_URL_WHEN_SUCCESS_CURL_OPTIONS: ''
+    #   PING_URL_WHEN_FAILURE: ''
+    #   PING_URL_WHEN_FAILURE_CURL_OPTIONS: ''
+    #   MAIL_SMTP_ENABLE: 'FALSE'
+    #   MAIL_SMTP_VARIABLES: ''
+    #   MAIL_TO: ''
+    #   MAIL_WHEN_SUCCESS: 'TRUE'
+    #   MAIL_WHEN_FAILURE: 'TRUE'
+    #   MAIL_FORCE_THREAD: 'FALSE'
+       TIMEZONE: 'Europe/Berlin'
+    volumes:
+      - /pool/docker/vaultwarden/data/:/bitwarden/data/
+      - /pool/docker/vaultwarden-backup/config:/config/
+    #   - /path/to/env:/.env
+
 networks:
   proxy:
     external: true
