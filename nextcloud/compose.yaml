@@ -14,7 +14,7 @@ services:
 
   nextcloud:
     container_name: nextcloud
-    image: lscr.io/linuxserver/nextcloud:latest
+    image: lscr.io/linuxserver/nextcloud:35.0.2-ls459
     networks:
       nextcloud:
       proxy:
@@ -55,30 +55,53 @@ services:
       nextcloud:
     restart: unless-stopped
 
-  collabora:
-    image: collabora/code:latest
-    container_name: collabora
+#  collabora:
+#    image: collabora/code:latest
+#    container_name: collabora
+#    networks:
+#      proxy:
+##    privileged: true
+##    ports:
+##      - "9980:9980"
+#    environment:
+#      - aliasgroup1=${COLLABORA_ALIASGROUP}
+#      - server_name=${COLLABORA_HOST}
+#      - DONT_GEN_SSL_CERT=1
+#      - username=${COLLABORA_USER}
+#      - password=${COLLABORA_PASS}
+#      - extra_params=--o:ssl.enable=false --o:ssl.termination=true
+#    tty: true
+#    labels:
+#      - "traefik.enable=true"
+#      - "traefik.http.routers.collabora-nc.rule=Host(`${COLLABORA_HOST}`)"
+#      - "traefik.http.routers.collabora-nc.entrypoints=websecure"
+#      - "traefik.http.routers.collabora-nc.tls=true"
+#      - "traefik.http.routers.collabora-nc.tls.certresolver=letsencrypt"
+#      - "traefik.http.services.collabora-nc.loadbalancer.server.port=9980"
+#    restart: always
+
+  eurooffice:
+    container_name: euro-office
+    image: ghcr.io/euro-office/documentserver:latest
+    restart: unless-stopped
+    #ports:
+    #        - 80:80
     networks:
       proxy:
-#    privileged: true
-#    ports:
-#      - "9980:9980"
     environment:
-      - aliasgroup1=${COLLABORA_ALIASGROUP}
-      - server_name=${COLLABORA_HOST}
-      - DONT_GEN_SSL_CERT=1
-      - username=${COLLABORA_USER}
-      - password=${COLLABORA_PASS}
-      - extra_params=--o:ssl.enable=false --o:ssl.termination=true
-    tty: true
+        - JWT_ENABLED=true
+        - JWT_SECRET=${JWT_SECRET}
+    #volumes:
+    #    - /pool/docker/nc-eurooffice/data:/var/lib/euro-office/documentserver
+    #    - /pool/docker/nc-eurooffice/logs:/var/log/euro-office/documentserver
+    #    - /pool/docker/nc-eurooffice/config:/etc/euro-office/documentserver
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.collabora-nc.rule=Host(`${COLLABORA_HOST}`)"
-      - "traefik.http.routers.collabora-nc.entrypoints=websecure"
-      - "traefik.http.routers.collabora-nc.tls=true"
-      - "traefik.http.routers.collabora-nc.tls.certresolver=letsencrypt"
-      - "traefik.http.services.collabora-nc.loadbalancer.server.port=9980"
-    restart: always
+      - "traefik.http.routers.eurooffice-nc.rule=Host(`${EUROOFFICE_HOST}`)"
+      - "traefik.http.routers.eurooffice-nc.entrypoints=websecure"
+      - "traefik.http.routers.eurooffice-nc.tls=true"
+      - "traefik.http.routers.eurooffice-nc.tls.certresolver=letsencrypt"
+      - "traefik.http.services.eurooffice-nc.loadbalancer.server.port=80"
 
   nc-talk:
     container_name: talk_hpb
