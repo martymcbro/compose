@@ -1,6 +1,6 @@
 services:
   ledfx:
-    image: ghcr.io/ledfx/ledfx:edge
+    image: ledfxorg/ledfx:latest
     container_name: ledfx
     restart: on-failure:3
     #network_mode: host
