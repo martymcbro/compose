@@ -14,7 +14,7 @@ services:
 
   nextcloud:
     container_name: nextcloud
-    image: lscr.io/linuxserver/nextcloud:35.0.2-ls459
+    image: lscr.io/linuxserver/nextcloud:latest
     networks:
       nextcloud:
       proxy:
