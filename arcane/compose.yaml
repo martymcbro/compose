@@ -1,6 +1,6 @@
 services:
   arcane:
-    image: ghcr.io/getarcaneapp/arcane:latest
+    image: ghcr.io/getarcaneapp/manager:v3
     container_name: arcane
     ports:
       - '3552:3552'
@@ -10,10 +10,9 @@ services:
       - /pool/docker/timelimit/timelimit-server:/pool/docker/timelimit/timelimit-server
       - /pool/compose:/pool/compose
     environment:
-      - APP_URL=${APP_URL}
+      - ARCANE_APP_URL=${ARCANE_APP_URL}
       - PUID=1000
       - PGID=100
-      - ENCRYPTION_KEY=${ENCRYPTION_KEY}
-      - JWT_SECRET=${JWT_SECRET}
-      - PROJECTS_DIRECTORY=/pool/compose
+      - ARCANE_ENCRYPTION_KEY=${ARCANE_ENCRYPTION_KEY}
+      - ARCANE_PROJECTS_DIRECTORY=/pool/compose
     restart: unless-stopped
