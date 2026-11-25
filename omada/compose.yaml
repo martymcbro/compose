@@ -1,7 +1,7 @@
 services: 
    omada:
     container_name: omada
-    image: mbentley/omada-controller:latest
+    image: mbentley/omada-controller:6
     networks:
       lan:
         ipv4_address: 192.168.1.50
