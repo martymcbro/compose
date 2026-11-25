@@ -1,18 +1,16 @@
 services:
   arcane-agent:
-    image: ghcr.io/getarcaneapp/arcane-headless:latest
+    image: ghcr.io/getarcaneapp/agent:latest
     container_name: arcane-agent
     restart: unless-stopped
     environment:
-      - AGENT_MODE=true
-      - EDGE_TRANSPORT=poll
-      - AGENT_TOKEN=${AGENT_TOKEN} 
-      - MANAGER_API_URL=${MANAGER_API_URL}
+      - ARCANE_AGENT=true
+      - ARCANE_AGENT_TRANSPORT=auto
+      - ARCANE_AGENT_TOKEN=${ARCANE_AGENT_TOKEN} 
+      - ARCANE_MANAGER_API_URL=${ARCANE_MANAGER_API_URL} 
       - PUID=1000
       - PGID=100
-      - PROJECTS_DIRECTORY=/pool/compose
-    ports:
-      - "3553:3553"
+      - ARCANE_PROJECTS_DIRECTORY=/pool/compose
     volumes:
       - /pool/docker/timelimit/timelimit-server:/pool/docker/timelimit/timelimit-server
       - /var/run/docker.sock:/var/run/docker.sock
